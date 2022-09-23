@@ -5,3 +5,6 @@ export const getAllPokemon = (url) => {
       .then((data) => resolve(data));
   });
 };
+
+export const getPokemon = (url) => {
+};
