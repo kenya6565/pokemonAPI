@@ -9,17 +9,19 @@ function App() {
   // 最初からuseEffectでデータを取ろうとしているのでloadingの初期値はtrueでいい
   const [loading, setLoading] = useState(true)
   const [pokemonData, setPokemondata] = useState([])
+  const [nextURL, setNextURL] = useState("")
 
   // 第2引数が[]なのでマウントされたら発火(コンポーネントが生成されて、レンダリングされた際)
   // つまり初回にレンダリングされた際に発火
   useEffect(() => {
     const fetchPokemonData = async () => {
-      // 全てのポケモンデーターを取得
+      // 全てのポケモンデーター一覧を取得
       let res = await getAllPokemon(initialURL);
 
       // 各ポケモンの詳細なデータを取得
       loadPokemon(res.results);
-      // console.log(res.results)
+      // console.log(res)
+      setNextURL(res.next);
       setLoading(false);
     };
     fetchPokemonData();
@@ -29,7 +31,7 @@ function App() {
     // allの中には配列を入れる
     let _pokemonData = await Promise.all(
       data.map((pokemon) => {
-        // このurlは1つ1つのポケモンの詳細なデータが入っているurl
+        // このurlは1つ1つのポケモンの詳細なデータ(わざとかタイプとか)が入っているurl
         let pokemonRecord = getPokemon(pokemon.url);
         return pokemonRecord;
       })
@@ -38,7 +40,19 @@ function App() {
     setPokemondata(_pokemonData);
   };
 
-  console.log(pokemonData)
+  // console.log(pokemonData)
+
+  const handleNextPage = async () => {
+    setLoading(true);
+    let data = await getAllPokemon(nextURL);
+    console.log(data)
+    await loadPokemon(data.results);
+    setLoading(false)
+    setNextURL(data.next)
+  };
+
+  // const handlePrevPage = () => {};
+
 
 
   return (
@@ -55,6 +69,10 @@ function App() {
                   <Card key={i} pokemon={pokemon} />
                 )
               })}
+            </div>
+            <div className="btn">
+              {/* <button onClick={handlePrevPage}>前へ</button> */}
+              <button onClick={handleNextPage}>次へ</button>
             </div>
           </>
         )}
