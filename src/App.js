@@ -10,6 +10,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [pokemonData, setPokemondata] = useState([])
   const [nextURL, setNextURL] = useState("")
+  const [prevURL, setPrevURL] = useState("")
 
   // 第2引数が[]なのでマウントされたら発火(コンポーネントが生成されて、レンダリングされた際)
   // つまり初回にレンダリングされた際に発火
@@ -45,13 +46,28 @@ function App() {
   const handleNextPage = async () => {
     setLoading(true);
     let data = await getAllPokemon(nextURL);
-    console.log(data)
+
+    // ここでawaitをつけることで非同期で早くなる？
     await loadPokemon(data.results);
     setLoading(false)
+    // 次のurlを入れてあげることで次のポケモンを見ることができる
     setNextURL(data.next)
+
+    // 次へボタンが押されたタイミングで前の20このデータのurlを入れてあげる
+    setPrevURL(data.previous)
   };
 
-  // const handlePrevPage = () => {};
+  const handlePrevPage = async () => {
+    setLoading(true);
+    let data = await getAllPokemon(prevURL);
+    console.log(data)
+
+    // ここでawaitをつけることで非同期で早くなる？
+    await loadPokemon(data.results);
+    setLoading(false)
+    // 次のurlを入れてあげることで次のポケモンを見ることができる
+    setPrevURL(data.previous)
+  };
 
 
 
@@ -71,7 +87,7 @@ function App() {
               })}
             </div>
             <div className="btn">
-              {/* <button onClick={handlePrevPage}>前へ</button> */}
+              <button onClick={handlePrevPage}>前へ</button>
               <button onClick={handleNextPage}>次へ</button>
             </div>
           </>
