@@ -11,6 +11,7 @@ function App() {
   const [pokemonData, setPokemondata] = useState([])
   const [nextURL, setNextURL] = useState("")
   const [prevURL, setPrevURL] = useState("")
+  const [prevButton, setPrevButton] = useState(false)
 
   // 第2引数が[]なのでマウントされたら発火(コンポーネントが生成されて、レンダリングされた際)
   // つまり初回にレンダリングされた際に発火
@@ -55,9 +56,12 @@ function App() {
 
     // 次へボタンが押されたタイミングで前の20このデータのurlを入れてあげる
     setPrevURL(data.previous)
+
+    setPrevButton(true)
   };
 
   const handlePrevPage = async () => {
+    if (!prevURL) return
     setLoading(true);
     let data = await getAllPokemon(prevURL);
     console.log(data)
@@ -67,6 +71,10 @@ function App() {
     setLoading(false)
     // 次のurlを入れてあげることで次のポケモンを見ることができる
     setPrevURL(data.previous)
+    // 一番最初のページに戻るときのみ戻るボタンを非表示にする
+    if (!data.previous) {
+      setPrevButton(false)
+    }
   };
 
 
@@ -87,7 +95,9 @@ function App() {
               })}
             </div>
             <div className="btn">
-              <button onClick={handlePrevPage}>前へ</button>
+              {prevButton ? (
+                <button onClick={handlePrevPage}>前へ</button>
+              ) : ""}
               <button onClick={handleNextPage}>次へ</button>
             </div>
           </>
